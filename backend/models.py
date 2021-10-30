@@ -1,7 +1,8 @@
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import String, Integer, Column
+from sqlalchemy import String, Integer, Column, Float, DateTime
+from sqlalchemy.sql.schema import ForeignKey
 
 SQLALCHEMY_DATABASE_URL: str = 'postgresql://aosjkguddchbnf:db0a47e3ed71b98a7f4d5766bbec92e128806b493d6bb8912941d911770dc65a@ec2-63-33-14-215.eu-west-1.compute.amazonaws.com:5432/dftnmhsp6ucj83'
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
@@ -16,3 +17,33 @@ class User(Base):
     username = Column(String(32), unique=True)
     password_hash = Column(String(256))
     api_id = Column(Integer, unique=True)
+
+class Transaction(Base):
+    __tablename__: str = 'transaction_tab'
+
+    transaction_id = Column(String, primary_key=True, index=True)
+    amount = Column(Float)
+    currency = Column(String)
+    credit_debit_indicator = Column(String)
+    timestamp = Column(DateTime, index=True)
+    lat = Column(Float)
+    lon = Column(Float)
+    status = Column(String)
+    message = Column(String)
+    point_of_sale = Column(String)
+
+    @declared_attr
+    def merchant(cls) -> Column:
+        return Column(String, ForeignKey('merchant_tab.name'))
+
+    @declared_attr
+    def account_id(cls) -> Column:
+        return Column(Integer, ForeignKey('users_tab.user_id'))
+
+class Merchant(Base):
+    __tablename__: str = 'merchant_tab'
+
+    name = Column(String, primary_key=True, index=True)
+
+    category = Column(String)
+    description = Column(String)

@@ -1,13 +1,16 @@
 import requests
+import random
+import asyncio
 from datetime import datetime, timedelta
 from fastapi import FastAPI, Depends, HTTPException 
 from typing import Dict, Generator, Optional
-from models import User, SessionLocal, Base, engine
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
+from models import User, SessionLocal, Base, engine, Transaction, Merchant
 from schemas import Token, TokenData
+from api import CapitalOne
 
 SECRET_KEY: str = 'spo0ky-scary-skeletons'
 ALGORITHM: str = 'HS256'
@@ -19,9 +22,9 @@ cap1_jwt='eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJuYmYiOjE2MzQxNjk2MDAsImFwaV9zd
 # if the database already has tables, this doesn't do anything
 Base.metadata.create_all(bind=engine)
 
-
 pwd_context = CryptContext(schemes=["sha256_crypt"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+capital_one = CapitalOne(cap1_jwt)
 app = FastAPI()
 
 def get_database() -> Generator[SessionLocal, None, None]:
@@ -34,21 +37,29 @@ def get_database() -> Generator[SessionLocal, None, None]:
         database.close()
 
 def verify_password(plain_password, hashed_password):
+    """function to verify that the given plaintext password matches the password hash"""
+
     return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password: str):
+    """function to return the hashed version of the given plaintext password"""
+
     return pwd_context.hash(password)
 
-def authenticate_user(database, username: str, password: str):
-    user=database.query(User).where(username==User.username).first()
-    
+def authenticate_user(database, username: str, password: str) -> Optional[User]:
+    """function to check that the given user is valid"""
+
+    user = database.query(User).where(username==User.username).first()
+
     if not user:
-        return False
+        return None
     if not verify_password(password, user.password_hash):
-        return False
+        return None
     return user
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+    """creates an access token for the given user"""
+
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -113,18 +124,68 @@ async def get_user_by_username(username: str, database = Depends(get_database)):
         raise HTTPException(404, detail='there is no user with that username')
     return response
 
+def upload_transactions(account_id, transactions, database) -> None:
+    """function to upload CapitalOne transactions to the database"""
+    
+    temp: List[Transaction] = []
+    for transaction in transactions['Transactions']:
+        if not database.query(Merchant).where(Merchant.name == transaction['merchant']['name']).first():
+            merchant = transaction['merchant']
+            database.add(Merchant(
+                name=merchant['name'],
+                category=merchant['category'],
+                description=merchant['description']
+            ))
+
+        temp.append(Transaction(
+            transaction_id=transaction['transactionUUID'],
+            account_id=account_id,
+            merchant=transaction['merchant']['name'],
+            amount=float(transaction['amount']),
+            credit_debit_indicator=transaction['creditDebitIndicator'],
+            currency=transaction['currency'],
+            timestamp=transaction['timestamp'],
+            lat=float(transaction['latitude']),
+            lon=float(transaction['longitude']),
+            status=transaction['status'],
+            message=transaction['message'],
+            point_of_sale=transaction['pointOfSale']
+        ))
+    database.add_all(temp)
+    database.flush()
+
+async def create_transactions(user, capital_one_account_id, database) -> None:
+    await asyncio.sleep(random.random())
+    transactions = await capital_one.add_transactions(capital_one_account_id)
+    if transactions is not None:
+        upload_transactions(user.user_id, transactions, database)
 
 @app.put('/user', status_code=201)
 async def create_user(username: str, password: str, database = Depends(get_database), http_session = Depends(get_httpsession)) -> int:
-    response = http_session.post('https://sandbox.capitalone.co.uk/developer-services-platform-pr/api/data/accounts/create', 
-           json={"quantity": 1, "numTransactions": 25, "liveBalance": True})
-    data=response.json()
-    password_hash=get_password_hash(password)
+    """
+    function to create a user.
+    This function will create a User in the database,
+    create a CapitalOne account, and create some transactions for the CapitalOne account.
+    """
 
-    user: User = User(username=username, password_hash=password_hash, api_id=int(data['Accounts'][0]['accountId']))
+    # create CapitalOne account and create some transactions
+    account_details: Dict[str, str] = await capital_one.create_uk_account()
+    account_id: int = account_details['Accounts'][0]['accountId']
+    print(account_id)
 
+    # add the user to the database and flush the connection to generate a unique ID,
+    # this is required to link the transactions with the user
+    password_hash: str = get_password_hash(password)
+    user: User = User(username=username, password_hash=password_hash, api_id=account_id)
     database.add(user)
+    database.flush()
+
+    # upload the CapitalOne transactions to the database
+    tasks: list = [create_transactions(user, account_id, database) for i in range(10)]
+    await asyncio.gather(*tasks)
+
     database.commit()
+
 
 @app.post("/token", response_model=Token)
 async def login_for_access_token(database=Depends(get_database), form_data: OAuth2PasswordRequestForm = Depends()):
