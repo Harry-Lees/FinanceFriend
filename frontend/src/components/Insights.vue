@@ -9,7 +9,7 @@
                             <tr class="text-left">
                                 <th class="px-6 py-4">Merchant</th>
                                 <th class="px-6 py-4">Net Spend</th>
-                                <th class="px-6 py-4">Num Visits</th>
+                                <th class="px-6 py-4">Num. Visits</th>
                             </tr>
                         </thead>
 
