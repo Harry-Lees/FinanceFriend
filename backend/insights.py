@@ -64,6 +64,10 @@ def spending_by_category(account_id, database=Depends(get_database)):
     infos = database.execute(text("select round(sum(amount)), category from transaction_tab inner join merchant_tab on transaction_tab.merchant=merchant_tab.name where amount >0 and account_id=(:account_id) group by category"), {'account_id':int(account_id)}).all()
     return infos
 
+@router.get('/lottery_winnings')
+def lottery_winnings(account_id, database=Depends(get_database)):
+    infos = database.execute(text("select sum(abs(amount)) from transaction_tab where account_id=(:account_id) and message like '%Lottery%'"), {'account_id':int(account_id)}).all()
+    return infos
 
 
 
