@@ -20,3 +20,14 @@ def tip_jar(account_id, database=Depends(get_database)):
 
     total = sum(ceil(item[0]) - item[0] for item in res)
     return round(total, 2)
+
+@router.get('/online_vs_instore')
+def online_vs_instore(account_id, database=Depends(get_database)):
+    """ returns a dict with keys 'online' and 'instore' which represent number of transactions of each type """
+    instore = database.execute(text("select count(1) from transaction_tab where account_id=(:account_id) and currency='GBP' and point_of_sale='In-store'"), {'account_id': int(account_id)}).all()
+    online = database.execute(text("select count(1) from transaction_tab where account_id=(:account_id) and currency='GBP' and point_of_sale='Online'"), {'account_id': int(account_id)}).all()
+    ret = {'online':online[0][0],
+            'instore':instore[0][0]
+            }
+    print(ret)
+    return ret
