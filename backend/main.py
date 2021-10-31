@@ -7,10 +7,11 @@ from typing import Dict, Generator, Optional
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-
+import insights
 from models import User, SessionLocal, Base, engine, Transaction, Merchant
 from schemas import Token, TokenData
 from api import CapitalOne
+from deps import get_database
 
 SECRET_KEY: str = 'spo0ky-scary-skeletons'
 ALGORITHM: str = 'HS256'
@@ -26,15 +27,8 @@ pwd_context = CryptContext(schemes=["sha256_crypt"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 capital_one = CapitalOne(cap1_jwt)
 app = FastAPI()
+app.include_router(insights.router)
 
-def get_database() -> Generator[SessionLocal, None, None]:
-    """create a database connection"""
-
-    database = SessionLocal()
-    try:
-        yield database
-    finally:
-        database.close()
 
 def verify_password(plain_password, hashed_password):
     """function to verify that the given plaintext password matches the password hash"""
