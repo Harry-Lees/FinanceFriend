@@ -1,32 +1,53 @@
 <template>
     <section class="flex justify-center w-full">
-        <div class="flex-flex-col w-full max-w-6xl">
-            <h1 class="text-3xl font-bold">Where you spend your money</h1>
-            <div class="border shadow-md rounded mt-4">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr class="text-left">
-                            <th class="px-6 py-4">Merchant</th>
-                            <th class="px-6 py-4">Net Spend</th>
-                            <th class="px-6 py-4">Num Visits</th>
-                        </tr>
-                    </thead>
+        <div class="flex-flex-col w-full max-w-6xl space-y-6">
 
-                    <tbody class="bg-white divide-y divide-gray-200 p-2">
-                        <tr v-for="merchant in topMerchants" :key="merchant.merchant">
-                            <td class="px-6 py-4 whitespace-nowrap">{{ merchant.merchant }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">£{{ merchant.net_spend }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ merchant.visits }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="card">
+                <h1 class="text-3xl font-bold">Where you spend your money</h1>
+                <div class="rounded mt-4">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead>
+                            <tr class="text-left">
+                                <th class="px-6 py-4">Merchant</th>
+                                <th class="px-6 py-4">Net Spend</th>
+                                <th class="px-6 py-4">Num Visits</th>
+                            </tr>
+                        </thead>
+
+                        <tbody class="bg-white divide-y divide-gray-200 p-2">
+                            <tr v-for="merchant in topMerchants" :key="merchant.merchant">
+                                <td class="px-6 py-4 whitespace-nowrap">{{ merchant.merchant }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">£{{ merchant.net_spend }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ merchant.visits }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <h1 class="text-3xl font-bold mb-2">What you spend money on</h1>
+                <doughnut-chart />
+            </div>
+           
+            <div class="card">
+                <h1 class="text-3xl font-bold mb-2">When you spend money</h1> 
+                <bar-chart />
             </div>
         </div>
     </section>
 </template>
 
 <script>
+import DoughnutChart from "@/components/DoughnutChart.vue";
+import BarChart from "@/components/BarChart.vue";
+
 export default {
+    components: {
+        DoughnutChart,
+        BarChart,
+    },
+
     data() {
         return {
             topMerchants: [],
@@ -60,7 +81,7 @@ export default {
 
 <style scoped>
 .card {
-    @apply rounded border w-full p-4
+    @apply rounded-xl border w-full p-12 shadow-md
 }
 
 .title {

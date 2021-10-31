@@ -7,10 +7,9 @@
                     <div class="flex-shrink-0 flex items-center text-lg text-gray-800"><router-link to="/">Finance Friends</router-link></div>
                 </div>
 
-                <div class="flex items-center space-x-16 text-s">
-                    <p>about</p>
-                    <router-link to="/login">login</router-link>
-                    <router-link to="/register" class="py-2 px-4 bg-green-400 rounded-full">register</router-link>
+                <div class="flex items-center space-x-12 text-s">
+                    <router-link to="/login" class="hover:text-green-500">login</router-link>
+                    <router-link to="/register" class="hover:text-green-500">register</router-link>
                 </div>
             </div>
         </div>
