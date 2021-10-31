@@ -52,4 +52,4 @@ def weekend_vs_weekday(account_id, database=Depends(get_database)):
             'spend_weekends':round(spend_weekends,2),
             'n_weekdays':round(n_weekdays, 2),
             'spend_weekdays':round(spend_weekdays, 2)}
-    print(ret)
+    return ret
