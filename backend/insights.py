@@ -3,6 +3,8 @@ from deps import get_database
 from sqlalchemy import func, desc, text
 from models import Transaction, Merchant
 from math import ceil
+from datetime import datetime
+
 router = APIRouter()
 
 
@@ -34,4 +36,28 @@ def online_vs_instore(account_id, database=Depends(get_database)):
             }
     print(ret)
     return ret
+
+@router.get('/weekend_vs_weekday')
+def weekend_vs_weekday(account_id, database=Depends(get_database)):
+    timestamps = database.execute(text("select timestamp, amount from transaction_tab where account_id=(:account_id) and currency='GBP' and amount>0"), {'account_id': int(account_id)}).all()
+    n_weekends=0
+    spend_weekends=0
+    n_weekdays=0
+    spend_weekdays=0
+    for time in timestamps:
+        # this is stupid lol
+        month = int(str(time[0])[5]+str(time[0])[6])
+        day = int(str(time[0])[8]+str(time[0])[9])
+        d=datetime(2021, month, day)
+        if d.weekday() >4:
+            n_weekends+=1
+            spend_weekends+=time[1]
+        else:
+            n_weekdays+=1
+            spend_weekdays+=time[1]
+    ret = {'n_weekends':round(n_weekends, 2),
+            'spend_weekends':round(spend_weekends,2),
+            'n_weekdays':round(n_weekdays, 2),
+            'spend_weekdays':round(spend_weekdays, 2)}
+    print(ret)
 
