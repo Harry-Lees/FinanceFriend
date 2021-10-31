@@ -18,7 +18,7 @@ const routes = [
         component: () => import('@/views/Register.vue')
     },
     {
-        path: '/breakdown',
+        path: '/insights',
         name: 'Main',
         component: () => import('@/views/Main.vue')
     },
