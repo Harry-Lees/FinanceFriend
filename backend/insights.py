@@ -68,7 +68,15 @@ def spending_by_category(account_id, database=Depends(get_database)):
 def lottery_winnings(account_id, database=Depends(get_database)):
     infos = database.execute(text("select sum(abs(amount)) from transaction_tab where account_id=(:account_id) and message like '%Lottery%'"), {'account_id':int(account_id)}).all()
     return infos
-
-
+@router.get('/dinner_food_spend')
+def dinner_food_spend(account_id, database=Depends(get_database)):
+    dinner = database.execute(text("select sum(amount), count(amount) from transaction_tab where EXTRACT(HOUR FROM timestamp)::INT >17 and message like '%Food & Dining%' and amount >0 and account_id=(:account_id)"), {'account_id':int(account_id)}).all()
+    lunch = database.execute(text("select sum(amount), count(amount) from transaction_tab where EXTRACT(HOUR FROM timestamp)::INT <16 and EXTRACT(HOUR FROM timestamp)::INT >12 and message like '%Food & Dining%' and amount >0 and account_id=(:account_id)"), {'account_id':int(account_id)}).all()
+    ret = {'dinner_count':dinner[0][1],
+            'dinner_spend':dinner[0][0],
+            'lunch_count':lunch[0][1],
+            'lunch_spend':lunch[0][0]}
+    return ret
+    print(dinner, lunch)
 
 
