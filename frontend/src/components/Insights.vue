@@ -2,6 +2,13 @@
     <section class="flex justify-center w-full">
         <div class="flex-flex-col w-full max-w-6xl space-y-6">
             <div class="card">
+                <h1 class="text-3xl font-bold">Tip-Jar saving</h1>
+                <p>If you'd rounded all of your transactions to the nearest whole pound, and saved the rest, you would've saved</p>
+
+                <h1 class="text-5xl font-bold text-green-500 mt-4">£{{ roundedSavings }}</h1>
+            </div>
+
+            <div class="card">
                 <h1 class="text-3xl font-bold">Where you spend your money</h1>
                 <div class="rounded mt-4">
                     <table class="min-w-full divide-y divide-gray-200">
@@ -29,6 +36,8 @@
                     <div>
                         <h1 class="text-3xl font-bold">How to Grow your wealth through investments</h1>
                         <small>External Article</small>
+
+                        <p class="mt-2 text-green-500">Suggested for you because of your income.</p>
                     </div>
 
                     <img src="https://www.savethestudent.org/uploads/Stock-market-shares-investing-tracking-prices.jpg" class="rounded-xl">
@@ -47,6 +56,8 @@
                     <div>
                         <h1 class="text-3xl font-bold">A simple guide to weekly meal prep</h1>
                         <small>External Article</small>
+
+                        <p class="mt-2 text-red-500">Suggested for you because of your food spending habits.</p>
                     </div>
                 </a>
             </div>
@@ -106,6 +117,7 @@ export default {
     },
 
     methods: {
+
         getTopMerchants() {
             this.$axios.get('/top_merchants', {params: {account_id: localStorage.user_id}})
             .then((result) => {

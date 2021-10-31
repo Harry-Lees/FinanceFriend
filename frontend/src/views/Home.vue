@@ -7,7 +7,7 @@
             <div class="absolute w-full py-2 bottom-1/3 inset-x-20 flex flex-col space-y-4">
                 <h1 class="text-6xl text-white filter drop-shadow-xl">Take control of <br>your money</h1>
                 <div>
-                    <router-link to="/login" class="rounded py-2 px-4 bg-green-400 text-white mt-4">Get Started</router-link>
+                    <router-link to="/register" class="rounded py-2 px-4 bg-green-400 text-white mt-4">Get Started</router-link>
                 </div>
             </div>
         </div>

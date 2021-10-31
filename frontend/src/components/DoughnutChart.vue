@@ -37,7 +37,7 @@ export default {
 
     methods: {
         getChartData() {
-            this.$axios.get('/spending_by_category', {params: { account_id: 28 }})
+            this.$axios.get('/spending_by_category', {params: { account_id: localStorage.user_id }})
             .then((response) => {
                 this.chartData = response.data;
             })

@@ -7,7 +7,8 @@
                     <div class="flex-shrink-0 flex items-center text-lg text-gray-800"><router-link to="/">Finance Friend</router-link></div>
                 </div>
 
-                <div class="flex items-center space-x-12 text-s">
+                <router-link v-if="loggedIn" to="/logout" class="hover:text-green-500">logout</router-link>
+                <div v-else class="flex items-center space-x-12 text-s">
                     <router-link to="/login" class="hover:text-green-500">login</router-link>
                     <router-link to="/register" class="hover:text-green-500">register</router-link>
                 </div>
@@ -24,26 +25,13 @@ export default {
         }
     },
 
-    methods: {
-        //documentClick(event) {
-        //    let elem = this.$refs.dropdownMenu;
-        //    let target = event.target;
-
-        //   if ((elem !== target) && !elem.contains(target)) {
-        //        this.dropdownOpen = false;
-        //    }
-        //},
-        toggleDropdown() {
-            this.dropdownOpen = !this.dropdownOpen;
+    computed: {
+        loggedIn() {
+            if (localStorage.user_id) {
+                return true
+            }
+            return false
         }
-    },
-
-    created() {
-        document.addEventListener("click", this.documentClick);
-    },
-
-    unmounted() {
-        document.removeEventListener("click", this.documentClick);
     }
 }
 </script>
