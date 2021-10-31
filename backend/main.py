@@ -3,10 +3,12 @@ import random
 import asyncio
 from datetime import datetime, timedelta
 from fastapi import FastAPI, Depends, HTTPException 
+from fastapi.middleware.cors import CORSMiddleware
 from typing import Dict, Generator, Optional
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+
 import insights
 from models import User, SessionLocal, Base, engine, Transaction, Merchant
 from schemas import Token, TokenData
@@ -27,6 +29,19 @@ pwd_context = CryptContext(schemes=["sha256_crypt"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 capital_one = CapitalOne(cap1_jwt)
 app = FastAPI()
+
+origins = [
+    '*'
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=['*'],
+    allow_headers=['*'],
+)
+
 app.include_router(insights.router)
 
 

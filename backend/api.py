@@ -38,16 +38,13 @@ class CapitalOne:
             return await response.json()
 
 
-    async def add_transactions(self, account_id: int):
+    async def add_transactions(self, account_id: int) -> Optional[dict]:
         """create a custom transaction using the CapitalOne API"""
         url = self.build_url(f'transactions/accounts/{account_id}/create')
-        print(url)
-        data = {'transactions':[{'currency':'GBP'}, {'status':'Successful'}]}
+        data = {'quantity': 25}
         async with self.session.post(url, json=data) as response:
             if 200 <= response.status < 300:
                 return await response.json()
-            else:
-                print(response.status)
 
 
     async def get_all_transactions(self, accountId):
