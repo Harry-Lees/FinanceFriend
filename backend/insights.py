@@ -15,12 +15,8 @@ def pi_spend_by_category(account_id, database=Depends(get_database)):
 @router.get('/tip_jar')
 def tip_jar(account_id, database=Depends(get_database)):
     """ returns pounds saved by rounding up all purchases nearest penny """
-    res = database.execute(text("select amount from transaction_tab where currency='GBP' and account_id=(:account_id) and amount>0"),{'account_id': int(account_id)}).all()
-    #database.execute(text('SELECT * FROM vehicle(:sensor_id)'), {'sensor_id': sensor_id}).first()
-    total=0
-    for item in res:
-        total+=ceil(item[0])-item[0]
-    total=round(total, 2)
-    print(total)
-    return total
 
+    res = database.query(Transaction.amount).where(Transaction.currency == 'GBP', Transaction.account_id == account_id).all()
+
+    total = sum(ceil(item[0]) - item[0] for item in res)
+    return round(total, 2)
