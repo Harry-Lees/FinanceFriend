@@ -21,6 +21,10 @@ export default {
             chartOptions: {
                 responsive: true,
                 maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+
+                },
             }
         }
     },

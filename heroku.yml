@@ -1,7 +1,7 @@
 build:
     docker:
-        backend: backend/Dockerfile
-        frontend: frontend/Dockerfile
+        backend: Dockerfile.backend
+        frontend: Dockerfile.frontend
 
 run:
     backend: uvicorn main:app

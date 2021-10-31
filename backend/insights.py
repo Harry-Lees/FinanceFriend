@@ -14,7 +14,6 @@ def pi_spend_by_category(account_id, database=Depends(get_database)):
     res = database.query(Transaction.merchant, func.count(Transaction.merchant).label('visits'), func.sum(Transaction.amount).label('net_spend')).where(Transaction.currency=='GBP', Transaction.account_id==account_id, Transaction.amount>0).group_by(Transaction.merchant).order_by(desc(func.sum(Transaction.amount))).limit(3).all()
     return res
 
-
 @router.get('/tip_jar')
 def tip_jar(account_id, database=Depends(get_database)):
     """returns pounds saved by rounding up all purchases nearest penny"""
@@ -23,7 +22,6 @@ def tip_jar(account_id, database=Depends(get_database)):
 
     total = sum(ceil(item[0]) - item[0] for item in res)
     return round(total, 2)
-
 
 @router.get('/online_vs_instore')
 def online_vs_instore(account_id, database=Depends(get_database)):
@@ -74,12 +72,11 @@ def lottery_winnings(account_id, database=Depends(get_database)):
 def dinner_food_spend(account_id, database=Depends(get_database)):
     dinner = database.execute(text("select sum(amount), count(amount) from transaction_tab where EXTRACT(HOUR FROM timestamp)::INT >17 and message like '%Food & Dining%' and amount >0 and account_id=(:account_id)"), {'account_id':int(account_id)}).all()
     lunch = database.execute(text("select sum(amount), count(amount) from transaction_tab where EXTRACT(HOUR FROM timestamp)::INT <16 and EXTRACT(HOUR FROM timestamp)::INT >12 and message like '%Food & Dining%' and amount >0 and account_id=(:account_id)"), {'account_id':int(account_id)}).all()
-    ret = {'dinner_count':dinner[0][1],
-            'dinner_spend':dinner[0][0],
-            'lunch_count':lunch[0][1],
-            'lunch_spend':lunch[0][0]}
+    ret = [
+        {'meal': 'dinner', 'count': dinner[0][1], 'spend': dinner[0][0]},
+        {'meal': 'lunch', 'count': lunch[0][1], 'spend': lunch[0][0] or 0}
+    ]
     return ret
-    print(dinner, lunch)
 
 @router.get('/low_balance')
 def low_balance():
