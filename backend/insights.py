@@ -53,3 +53,18 @@ def weekend_vs_weekday(account_id, database=Depends(get_database)):
             'n_weekdays':round(n_weekdays, 2),
             'spend_weekdays':round(spend_weekdays, 2)}
     return ret
+
+@router.get('/spending_by_day')
+def spending_by_day(account_id, database=Depends(get_database)):
+    infos = database.execute(text("select date_trunc( 'day', timestamp)::date, sum(amount) from transaction_tab where amount>0 and account_id=(:account_id) group by date_trunc( 'day', timestamp)::date"), {'account_id':int(account_id)}).all()
+    return infos
+
+@router.get('/spending_by_category')
+def spending_by_category(account_id, database=Depends(get_database)):
+    infos = database.execute(text("select round(sum(amount)), category from transaction_tab inner join merchant_tab on transaction_tab.merchant=merchant_tab.name where amount >0 and account_id=(:account_id) group by category"), {'account_id':int(account_id)}).all()
+    return infos
+
+
+
+
+
