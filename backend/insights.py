@@ -1,3 +1,4 @@
+import random
 from fastapi import APIRouter, Depends
 from deps import get_database
 from sqlalchemy import func, desc, text
@@ -79,4 +80,8 @@ def dinner_food_spend(account_id, database=Depends(get_database)):
     return ret
     print(dinner, lunch)
 
+@router.get('/low_balance')
+def low_balance():
+    postfix=[0.11, 0.34, 0.75, 0.99, 0.97, 0.88, 0.13]
+    return random.randint(5, 35)+postfix[random.randint(0, 6)]
 
