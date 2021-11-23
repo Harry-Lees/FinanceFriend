@@ -69,7 +69,7 @@ class CapitalOne:
 
 
 async def main():
-    token: str = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJuYmYiOjE2MzQxNjk2MDAsImFwaV9zdWIiOiI0MDVjMGUyNDRlOWI3OWU4Y2M1M2ZiMGYwN2VmMTljYjIwMmUxZWQ2ZmViNWRhMzBkZjZhYmNjNGFmMjAyY2FhMTY0MjM3NzYwMDAwMCIsInBsYyI6IjVkY2VjNzRhZTk3NzAxMGUwM2FkNjQ5NSIsImV4cCI6MTY0MjM3NzYwMCwiZGV2ZWxvcGVyX2lkIjoiNDA1YzBlMjQ0ZTliNzllOGNjNTNmYjBmMDdlZjE5Y2IyMDJlMWVkNmZlYjVkYTMwZGY2YWJjYzRhZjIwMmNhYSJ9.fNPaRoOcD1LT0niT6VTTpAkUWUq5JbLTWIOxf0x_zm08hKgrUjuYI6gWTUkWbgp579t7N5Qjkoc_u-n44dc6FQw8_MxXxFZTJY1xObTCk5expEbHBDw3B6nLrv8iL1k27dHMhh5O1u142YAz24nhuKJV4EJjqHrbDsnebg_jjTQofDu072JBwXY445f_CJbwaaimmLUIpw7_CGVTuWzd52gbxEK9Uo8Q2O4zBcTvkjOVDQ7k5S5Y6x7mU-9yePcFXpkvvYEXXs4F6w3sSIf6ecjrLZUovHh3J7vSPp_I3jy-EBlatuzNP4Qui6zUhZU598GsFmwNW_RZjFGpst4rJw'
+    token: str = ''
     api = CapitalOne(token)
     create_account_response = await api.create_uk_account()
     accountId = create_account_response['Accounts'][0]['accountId']
