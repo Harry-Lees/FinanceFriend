@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import String, Integer, Column, Float, DateTime
 from sqlalchemy.sql.schema import ForeignKey
 
-SQLALCHEMY_DATABASE_URL: str = 'postgresql://aosjkguddchbnf:db0a47e3ed71b98a7f4d5766bbec92e128806b493d6bb8912941d911770dc65a@ec2-63-33-14-215.eu-west-1.compute.amazonaws.com:5432/dftnmhsp6ucj83'
+SQLALCHEMY_DATABASE_URL: str = ''
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
