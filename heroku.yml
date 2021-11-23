@@ -1,8 +1,0 @@
-build:
-    docker:
-        backend: Dockerfile.backend
-        frontend: Dockerfile.frontend
-
-run:
-    backend: uvicorn main:app
-    frontend: serve -s dist
